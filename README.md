@@ -2,7 +2,6 @@
 
 Certified metamorphic audit of the answer verifiers used in RLVR reward computation and math benchmark evaluation.
 
-**Paper:** arXiv:XXXX.XXXXX
 **License:** MIT
 
 ---
