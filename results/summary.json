@@ -1,0 +1,14 @@
+{
+  "n_verdicts": 307420,
+  "in_contract_n": 114055,
+  "in_contract_n_evaluated": 110088,
+  "in_contract_coverage": 0.9652185349173644,
+  "in_contract_fn_rate_evaluated": 0.16589455708160744,
+  "in_contract_fn_rate_all": 0.16012450133707423,
+  "in_contract_failure_rate": 0.19490596641970978,
+  "out_of_contract_n": 11009,
+  "adversarial_n_evaluated": 43871,
+  "adversarial_coverage": 0.8753890972942773,
+  "adversarial_fp_rate_evaluated": 0.004718378883544938,
+  "overall_error_rate": 0.11577646216901959
+}
