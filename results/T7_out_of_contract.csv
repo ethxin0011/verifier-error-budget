@@ -1,0 +1,8 @@
+stratum,verifier,n,n_eval,coverage,fn_rate,fn_rate_all,err_rate
+S10_sets,strip_string,634,634,1.0,1.0,1.0,0.0
+S14_unreduced,mathverify_expr,2062,2062,1.0,1.0,1.0,0.0
+S14_unreduced,strip_string,2062,2062,1.0,1.0,1.0,0.0
+S10_sets,mathverify_expr,634,634,1.0,0.9747634069400631,0.9747634069400631,0.0
+S1_frac_dialect,mathverify_expr,4146,4146,1.0,0.9377713458755427,0.9377713458755427,0.0
+S4_delimiters,mathverify_expr,1067,1067,1.0,0.8706654170571696,0.8706654170571696,0.0
+S7_sqrt_exp,mathverify_expr,404,404,1.0,0.31435643564356436,0.31435643564356436,0.0
