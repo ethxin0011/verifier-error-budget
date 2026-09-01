@@ -1,0 +1,65 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+display_name: verifier-error-budget-v1
+experiment_name: verifier-error-budget
+
+settings:
+  default_compute: azureml:cpu-audit-cluster
+  continue_on_step_failure: false
+
+jobs:
+
+  prepare_gold:
+    type: command
+    compute: azureml:cpu-audit-cluster
+    environment: azureml:verifier-audit-cpu:2
+    code: .
+    command: >-
+      python prepare_gold.py
+      --out_dir ${{outputs.shards}}
+      --max_golds 40000
+      --shard_size 2000
+    outputs:
+      shards:
+        type: uri_folder
+
+  differential_verify:
+    type: parallel
+    compute: azureml:cpu-audit-cluster
+    inputs:
+      shards: ${{parent.jobs.prepare_gold.outputs.shards}}
+    outputs:
+      verdicts:
+        type: uri_folder
+    input_data: ${{inputs.shards}}
+    mini_batch_size: "1"
+    resources:
+      instance_count: 5
+    max_concurrency_per_instance: 4
+    mini_batch_error_threshold: -1
+    logging_level: "INFO"
+    retry_settings:
+      max_retries: 2
+      timeout: 3600
+    task:
+      type: run_function
+      code: .
+      entry_script: differential_verify.py
+      environment: azureml:verifier-audit-cpu:2
+      program_arguments: >-
+        --verdicts_out ${{outputs.verdicts}}
+
+  aggregate:
+    type: command
+    compute: azureml:cpu-audit-cluster
+    environment: azureml:verifier-audit-cpu:2
+    code: .
+    inputs:
+      verdicts: ${{parent.jobs.differential_verify.outputs.verdicts}}
+    outputs:
+      report:
+        type: uri_folder
+    command: >-
+      python aggregate.py
+      --verdicts_dir ${{inputs.verdicts}}
+      --report_dir ${{outputs.report}}
