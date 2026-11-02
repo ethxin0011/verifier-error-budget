@@ -45,8 +45,9 @@ verifier-error-budget/
 │   │                         #   verdict domain: TRUE | FALSE | TIMEOUT | ERROR | CRASH
 │   │                         #   PER_ITEM_TIMEOUT_S = 5, CHUNK_WALL_TIMEOUT_S = 900
 │   ├── transforms.py         # The 43 semantics-preserving + adversarial transformations T
-│   ├── build_dataset.py      # Gold-answer sampling into the 14 strata (4,990 answers)
-│   ├── run_audit.py          # Sharded verdict generation → raw verdict shards
+│   ├── normalizers.py        # Reference string and numeric normalizers
+│   ├── prepare_gold.py       # Gold-answer sampling into the 14 strata (4,990 answers)
+│   ├── differential_verify.py# Sharded verdict generation → raw verdict shards
 │   └── aggregate.py          # Verdict shards → results/ CSVs
 │                             #   counts ERROR/CRASH separately from FALSE
 ├── results/                  # ALL GENERATED ARTIFACTS LAND HERE (see below)
@@ -69,7 +70,7 @@ verifier-error-budget/
 
 `results/` is the single destination for every generated artifact — nothing else in the repo is written to at runtime. It has three tiers, in dependency order:
 
-- **`results/raw/`** — the immutable audit output. One record per `(gold answer, transformation, verifier)` triple, carrying the verdict symbol and the stratum label. This is the 307,420-verdict corpus; everything downstream is a pure function of it. Written by `src/run_audit.py`, one file per shard, then reduced by `src/aggregate.py`.
+- **`results/raw/`** — the immutable audit output. One record per `(gold answer, transformation, verifier)` triple, carrying the verdict symbol and the stratum label. This is the 307,420-verdict corpus; everything downstream is a pure function of it. Written by `src/differential_verify.py`, one file per shard, then reduced by `src/aggregate.py`.
 - **`results/tables/`** — the numbers that appear in the paper. Regenerate with `python make_tables.py`. `T8_offbyone_by_magnitude.csv` is the one to read first: it exposes the scale-invariance of `math.isclose(rel_tol=1e-4)`, where a gold answer of 10,000 accepts 10,001 because the relative error is only 0.01%.
 - **`results/figures/`** — plots built from the tables, not from raw. Regenerate with `python make_figures.py`.
 
@@ -81,7 +82,7 @@ Because every tier is derived, deleting `results/tables/` and `results/figures/`
 
 ```bash
 # 1. Environment (the ANTLR4 pin is load-bearing)
-conda env create -f env/environment.yml
+conda env create -f env/conda.yml
 conda activate verifier-error-budget
 
 # 2. Run the audit (Azure ML) — see submitjob.ipynb for the interactive path
@@ -109,9 +110,10 @@ The SymPy cascade errors on ~46.5% of inputs, but on the subset it *does* proces
 
 ```bibtex
 @misc{verifier-error-budget,
-  title  = {Verifier Error Budget: A Certified Metamorphic Audit of RLVR Math Verifiers},
+  title  = {Where the Verifier Fails: A Category-Level Audit of Reward Signals in RLVR},
+  author = {Xin, Esther},
   year   = {2026},
-  eprint = {XXXX.XXXXX},
+  eprint = {2609.01354},
   archivePrefix = {arXiv},
   primaryClass  = {cs.CL}
 }
